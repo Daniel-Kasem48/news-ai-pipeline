@@ -6,6 +6,35 @@ Breaking news arrives as a flood of short posts from many channels – the same 
 
 It comes with an **evaluation harness**: a set of hand-labelled real Arabic posts, an "oracle" mode that tests all the plumbing without calling the model, and a report that scores every run (accuracy, merge/split errors, compression, token cost), so prompt changes are measured, not guessed.
 
+## Use cases
+
+- **Breaking-news ticker for a news site** – feed it the channels a newsroom follows; publish one item per story instead of five copies of the same event, updated as new developments arrive.
+- **Newsroom monitoring dashboard** – "what happened in the last 60 minutes, and how many independent sources report it?" (`digest.py`, `/stories/latest`).
+- **Alerts and digests** – push a story only once it is confirmed by 2+ channels, or send an hourly digest to subscribers.
+- **Media monitoring** – for analysts, NGOs and research teams tracking events across many Arabic-language sources.
+- **Fact-checking triage** – single-source stories vs. stories several channels corroborate within minutes.
+- **Research datasets** – labelled, deduplicated event timelines built from raw post streams.
+- **Other languages and domains** – the stages are generic (adapters, normalisation, gate, signature, decision); swap the normaliser, prompts and gazetteer for another language or for market, sports or crypto news.
+
+## Expected costs
+
+Measured on a real run of **623 posts**: about **2,900 input tokens per post (≈70% served from the provider's prompt cache)** and **~155 output tokens per post**. Stable prompt prefixes are ordered first so the cache hits.
+
+At DeepSeek's list prices (check current rates before relying on them):
+
+| Pricing | Cache hit / miss input, output (USD per 1M tokens) | Cost per 1,000 posts |
+|---|---|---|
+| DeepSeek V3.2 | $0.028 / $0.28, $0.42 | **≈ $0.37** |
+| DeepSeek V3 (earlier pricing) | $0.07 / $0.27, $1.10 | ≈ $0.55 |
+
+| Scenario | Posts per day | LLM cost per month |
+|---|---|---|
+| Small newsroom – 10 channels | ~1,000 | **≈ $11–17** |
+| Regional monitor – 30 channels | ~3,000 | ≈ $33–50 |
+| Large monitor – 100 channels | ~10,000 | ≈ $110–165 |
+
+Hosting is small: the server is one Python process with SQLite (a ~$5–10/month VPS is enough), or MySQL if you already run one. Posts that are not news are dropped after the first call, so they never pay for the second one. Get exact numbers for your own run with `PRICE_IN=… PRICE_OUT=… PRICE_CACHED=… make report`.
+
 ## Pipeline
 
 ```
