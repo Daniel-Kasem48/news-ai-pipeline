@@ -1,0 +1,218 @@
+{
+  "_comment": [
+    "Gazetteer. Data, not code — places.py must contain no facts about particular places, only the mechanism for relating them.",
+    "level: country | governorate | district | town.",
+    "source: 'corpus' = stated verbatim in a post; 'manual' = hand-added, needs review. A wrong alias silently merges unrelated stories, so nothing is ever auto-inserted; call A proposes, a human confirms.",
+    "An empty list is valid: every location then resolves to UNKNOWN, which is the safe default, never a wildcard."
+  ],
+  "places": [
+    {
+      "canonical": "لبنان",
+      "level": "country",
+      "parent": null,
+      "aliases": [
+        "لبنان"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "النبطية",
+      "level": "governorate",
+      "parent": "لبنان",
+      "aliases": [
+        "محافظة النبطية"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "قضاء صور",
+      "level": "district",
+      "parent": "لبنان",
+      "aliases": [
+        "صور",
+        "قضاء صور"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "شحور",
+      "level": "town",
+      "parent": "قضاء صور",
+      "aliases": [
+        "بلدة شحور"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "زوطر الشرقية",
+      "level": "town",
+      "parent": "النبطية",
+      "aliases": [
+        "بلدة زوطر الشرقية",
+        "زوطر"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "المنصوري",
+      "level": "town",
+      "parent": "قضاء صور",
+      "aliases": [],
+      "source": "manual"
+    },
+    {
+      "canonical": "البيسارية",
+      "level": "town",
+      "parent": "لبنان",
+      "aliases": [
+        "محلة البيسارية"
+      ],
+      "source": "manual"
+    },
+    {
+      "canonical": "فلسطين المحتلة",
+      "level": "country",
+      "parent": null,
+      "aliases": [
+        "فلسطين"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "قطاع غزة",
+      "level": "governorate",
+      "parent": "فلسطين المحتلة",
+      "aliases": [
+        "غزة",
+        "القطاع"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "وسط قطاع غزة",
+      "level": "district",
+      "parent": "قطاع غزة",
+      "aliases": [
+        "وسط القطاع"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "الزوايدة",
+      "level": "town",
+      "parent": "وسط قطاع غزة",
+      "aliases": [
+        "بلدة الزوايدة"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "اليمن",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "محافظة حجة",
+      "level": "governorate",
+      "parent": "اليمن",
+      "aliases": [
+        "حجة"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "إيران",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "حقل بارس الجنوبي",
+      "level": "town",
+      "parent": "إيران",
+      "aliases": [
+        "بارس الجنوبي"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "سوريا",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "دمشق",
+      "level": "governorate",
+      "parent": "سوريا",
+      "aliases": [
+        "العاصمة"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "السويداء",
+      "level": "governorate",
+      "parent": "سوريا",
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "العراق",
+      "level": "country",
+      "parent": null,
+      "aliases": [
+        "بغداد"
+      ],
+      "source": "manual"
+    },
+    {
+      "canonical": "روسيا",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "أوكرانيا",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "الصين",
+      "level": "country",
+      "parent": null,
+      "aliases": [
+        "بكين"
+      ],
+      "source": "corpus"
+    },
+    {
+      "canonical": "مصر",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "روما",
+      "level": "governorate",
+      "parent": "إيطاليا",
+      "aliases": [],
+      "source": "corpus"
+    },
+    {
+      "canonical": "إيطاليا",
+      "level": "country",
+      "parent": null,
+      "aliases": [],
+      "source": "manual"
+    }
+  ]
+}
