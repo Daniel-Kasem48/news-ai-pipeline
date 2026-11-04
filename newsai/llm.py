@@ -14,6 +14,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from newsai.lang import LANG, LANGUAGE
+
 PROMPTS = Path(__file__).parent / "prompts"
 
 
@@ -65,7 +67,12 @@ def client():
 
 
 def prompt(name: str) -> str:
-    return (PROMPTS / f"{name}.txt").read_text(encoding="utf-8")
+    """Language-specific prompt if one exists (prompts/<lang>/), else the
+    language-neutral one (prompts/default/) told which language to answer in."""
+    path = PROMPTS / LANG / f"{name}.txt"
+    if not path.exists():
+        path = PROMPTS / "default" / f"{name}.txt"
+    return path.read_text(encoding="utf-8").replace("{LANGUAGE}", LANGUAGE)
 
 
 _FENCE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.MULTILINE)

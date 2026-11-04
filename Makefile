@@ -1,5 +1,5 @@
 PY ?= python
-TESTS = adapters clock places store migrate server
+TESTS = normalize adapters clock places store migrate server
 
 .PHONY: install test oracle run report serve
 

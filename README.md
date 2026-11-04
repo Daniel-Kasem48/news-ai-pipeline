@@ -1,20 +1,31 @@
-# Arabic News AI Pipeline
+# News AI Pipeline
 
-**Python · LLM (DeepSeek / OpenAI-compatible) · SQLite / MySQL · stdlib HTTP server · Docker**
+**Python · LLM (DeepSeek / OpenAI-compatible) · SQLite / MySQL · stdlib HTTP server · Docker · multilingual (Arabic built in)**
 
 Breaking news arrives as a flood of short posts from many channels – the same event reported five times, in different words, with channel boilerplate around it. This pipeline turns that stream into a clean list of **stories**: it cleans each post, uses an LLM to decide whether it is news and what it is about, and then decides how it relates to the stories already open – **new story, new development, update, confirmation from another source, or duplicate**.
 
 It comes with an **evaluation harness**: a set of hand-labelled real Arabic posts, an "oracle" mode that tests all the plumbing without calling the model, and a report that scores every run (accuracy, merge/split errors, compression, token cost), so prompt changes are measured, not guessed.
+
+## Languages
+
+One setting, `NEWSAI_LANG`, drives text normalisation, the prompts and the place gazetteer:
+
+| `NEWSAI_LANG` | Normalisation | Prompts | Places |
+|---|---|---|---|
+| `ar` (default) | Arabic rules: diacritics, alef/yaa/taa-marbuta variants, Arabic-Indic digits | tuned Arabic prompts with Arabic cue words (`prompts/ar/`) | `data/places.ar.json` |
+| any other code (`en`, `de`, `fr`, …) | generic Unicode: NFKC, accent and case folding, punctuation to spaces | language-neutral prompts that answer in that language (`prompts/default/`) | `data/places.<lang>.json` if present, otherwise none |
+
+Adding a language well means: an optional `prompts/<lang>/` with cue words for that language, an optional gazetteer, and labelled fixtures to measure it. The bundled fixtures are Arabic, so Arabic is the language that is measured end to end today.
 
 ## Use cases
 
 - **Breaking-news ticker for a news site** – feed it the channels a newsroom follows; publish one item per story instead of five copies of the same event, updated as new developments arrive.
 - **Newsroom monitoring dashboard** – "what happened in the last 60 minutes, and how many independent sources report it?" (`digest.py`, `/stories/latest`).
 - **Alerts and digests** – push a story only once it is confirmed by 2+ channels, or send an hourly digest to subscribers.
-- **Media monitoring** – for analysts, NGOs and research teams tracking events across many Arabic-language sources.
+- **Media monitoring** – for analysts, NGOs and research teams tracking events across many sources and languages.
 - **Fact-checking triage** – single-source stories vs. stories several channels corroborate within minutes.
 - **Research datasets** – labelled, deduplicated event timelines built from raw post streams.
-- **Other languages and domains** – the stages are generic (adapters, normalisation, gate, signature, decision); swap the normaliser, prompts and gazetteer for another language or for market, sports or crypto news.
+- **Other domains** – the stages are generic (adapters, normalisation, gate, signature, decision); adapt the prompts for market, sports or crypto news.
 
 ## Expected costs
 
@@ -41,7 +52,7 @@ Hosting is small: the server is one Python process with SQLite (a ~$5–10/month
 raw post
   │
   ▼  Stage 0 – adapters.py      per-channel cleanup: footers, credits, bilingual duplicates, mirrored-post prefixes
-  ▼  normalize.py               Arabic normalisation: diacritics, letter variants, Arabic-Indic digits, invisible chars
+  ▼  normalize.py               match keys per language (Arabic rules or generic Unicode folding)
   ▼  Stage 1+2 – LLM call A     gate (is this breaking news?) + signature: actor, action, location, aliases
   ▼  candidate retrieval        three channels: entity match · place hierarchy (places.py) · TF-IDF lexical overlap (lexical.py)
   ▼  Stage 3 – LLM call B       decision vs. open stories: duplicate | confirmation | update | new_development | new_story
@@ -62,10 +73,11 @@ Design choices worth noting:
 ```
 newsai/
 ├── adapters.py        Stage 0 – per-channel post assembly
-├── normalize.py       Arabic text normalisation
+├── lang.py            NEWSAI_LANG: one setting for normalisation, prompts, gazetteer
+├── normalize.py       match keys: Arabic rules + generic Unicode path
 ├── llm.py             LLM client (OpenAI-compatible), token + cache accounting, dry-run
-├── prompts/           call_a.txt (gate + signature), call_b.txt (decision)
-├── places.py          place hierarchy + aliases (data/places.json)
+├── prompts/           ar/ and default/: call_a (gate + signature), call_b (decision)
+├── places.py          place hierarchy + aliases (data/places.<lang>.json)
 ├── lexical.py         TF-IDF candidate retrieval
 ├── clock.py           story expiry rules, timestamp parsing
 ├── run.py             the pipeline
@@ -78,8 +90,8 @@ newsai/
 ├── store.py           reads/writes; migrates on connect
 ├── migrate.py         migration runner with a ledger
 └── migrations/        numbered .sql files, one per dialect
-fixtures/posts.jsonl   36 hand-labelled posts with expected class and decision
-tests/                 88 checks: adapters, clock, places, store, migrations, server
+fixtures/posts.jsonl   36 hand-labelled Arabic posts with expected class and decision
+tests/                 96 checks: normalisation, adapters, clock, places, store, migrations, server
 ```
 
 ## Getting started
@@ -87,7 +99,7 @@ tests/                 88 checks: adapters, clock, places, store, migrations, se
 ```bash
 python -m venv .venv && . .venv/bin/activate
 make install
-cp .env.example .env          # add DEEPSEEK_API_KEY for live runs
+cp .env.example .env          # add DEEPSEEK_API_KEY for live runs; set NEWSAI_LANG
 
 make test                     # unit tests (SQLite)
 make oracle                   # full pipeline, no API calls – should score 100%

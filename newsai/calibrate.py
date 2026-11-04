@@ -12,7 +12,7 @@ import sys
 from newsai import lexical
 from newsai import places
 from newsai import store
-from newsai.normalize import normalize_ar_key
+from newsai.normalize import normalize_key
 
 
 def keyset(*values):
@@ -23,7 +23,7 @@ def keyset(*values):
         if isinstance(v, str):
             v = [v]
         for item in v:
-            k = normalize_ar_key(str(item))
+            k = normalize_key(str(item))
             if k:
                 out.add(k)
     return out

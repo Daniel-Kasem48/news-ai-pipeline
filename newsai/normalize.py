@@ -1,4 +1,4 @@
-"""Arabic normalization.
+"""Text normalisation for match keys: Arabic-specific rules plus a generic Unicode path.
 
 Two levels, never conflated:
     aggressive -> hashing / exact-dup / match keys ONLY
@@ -7,6 +7,8 @@ Two levels, never conflated:
 """
 import re
 import unicodedata
+
+from newsai.lang import LANG
 
 _DIACRITICS = re.compile('[ً-ْٰٓ-ٕـ]')
 _TATWEEL = 'ـ'
@@ -57,3 +59,22 @@ def normalize_ar_light(text: str) -> str:
     t = _INVISIBLE.sub('', t)
     t = re.sub(r'\s+', ' ', t).strip()
     return t
+
+
+def normalize_generic_key(text: str) -> str:
+    """Aggressive key for any language: NFKC, accents folded, case folded,
+    punctuation and symbols to spaces, invisible characters removed."""
+    t = unicodedata.normalize('NFKC', text)
+    t = _INVISIBLE.sub('', t)
+    t = ''.join(c for c in unicodedata.normalize('NFD', t) if unicodedata.category(c) != 'Mn')
+    t = ''.join(_to_space(c) for c in t)
+    t = re.sub(r'\s+', ' ', t).strip().casefold()
+    return t
+
+
+_KEY_BY_LANG = {"ar": normalize_ar_key}
+
+
+def normalize_key(text: str, lang: str = None) -> str:
+    """The match key for the configured language (NEWSAI_LANG)."""
+    return _KEY_BY_LANG.get(lang or LANG, normalize_generic_key)(text)

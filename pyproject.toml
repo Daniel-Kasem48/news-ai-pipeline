@@ -1,7 +1,7 @@
 [project]
 name = "newsai"
 version = "0.1.0"
-description = "Arabic news AI pipeline: normalisation, LLM classification and story clustering with an evaluation harness"
+description = "Multilingual news AI pipeline: normalisation, LLM classification and story clustering with an evaluation harness"
 requires-python = ">=3.10"
 dependencies = ["openai>=1.40", "python-dotenv>=1.0", "pymysql>=1.1"]
 
@@ -9,4 +9,4 @@ dependencies = ["openai>=1.40", "python-dotenv>=1.0", "pymysql>=1.1"]
 packages = ["newsai"]
 
 [tool.setuptools.package-data]
-newsai = ["prompts/*.txt", "data/*.json", "migrations/*.sql"]
+newsai = ["prompts/*/*.txt", "data/*.json", "migrations/*.sql"]

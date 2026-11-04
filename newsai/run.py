@@ -23,7 +23,7 @@ from newsai import lexical
 from newsai import places
 from newsai import store
 from newsai.adapters import assemble, clean_credit, strip_attribution
-from newsai.normalize import normalize_ar_key
+from newsai.normalize import normalize_key
 
 HERE = Path(__file__).parent
 FIXTURES = HERE.parent / "fixtures" / "posts.jsonl"
@@ -50,7 +50,7 @@ def _keyset(*values):
         if isinstance(v, str):
             v = [v]
         for item in v:
-            k = normalize_ar_key(str(item))
+            k = normalize_key(str(item))
             if k:
                 out.add(k)
     return out
@@ -315,7 +315,7 @@ def main():
         post = assemble(row["id"], row["channel"], row["text"])
         now = clock.parse(row.get("ts") or row.get("time"))
         stamp = now.isoformat() if now else started
-        key = normalize_ar_key(post.text)
+        key = normalize_key(post.text)
         key_hash = sha(key)
 
         con.execute(

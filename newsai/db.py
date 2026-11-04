@@ -3,7 +3,7 @@
 Why both rather than a straight port: the tests need a database they can create
 in a temp file and throw away, and production needs the MySQL the rest of the
 estate already runs. Porting outright would leave the test suite needing a
-server to say whether `normalize_ar_key` still deduplicates correctly.
+server to say whether `normalize_key` still deduplicates correctly.
 
 Call sites are unchanged. They still write `?` placeholders and read rows by
 column name; everything dialect-specific is in this file.

@@ -16,7 +16,7 @@ import math
 import re
 from collections import Counter
 
-from newsai.normalize import normalize_ar_key
+from newsai.normalize import normalize_key
 
 # One character is never evidence, and a term that is only digits is a count,
 # not a subject. Everything else is kept — no stopword list, because a fixed
@@ -27,7 +27,7 @@ _MIN_LEN = 3
 def terms(text: str) -> set:
     if not text:
         return set()
-    key = normalize_ar_key(text)
+    key = normalize_key(text)
     out = set()
     for t in re.split(r"\s+", key):
         t = t.strip()

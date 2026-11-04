@@ -12,7 +12,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from typing import Optional
 
-from newsai.normalize import _INVISIBLE, normalize_ar_key
+from newsai.normalize import _INVISIBLE, normalize_key
 
 
 @dataclass
@@ -280,7 +280,7 @@ def clean_credit(s):
 
 
 def _key_tokens(s: str) -> set:
-    return {t for t in normalize_ar_key(s or "").split() if len(t) > 1}
+    return {t for t in normalize_key(s or "").split() if len(t) > 1}
 
 
 def strip_attribution(text: str, cited: Optional[str]) -> tuple:
@@ -330,14 +330,14 @@ def _strip_trailing_credit(text: str, cited: str) -> tuple:
     the sentence boundary the post itself wrote, when there is one close by,
     because the words leading into a trailer belong to the trailer.
     """
-    want = [t for t in normalize_ar_key(cited).split() if t]
+    want = [t for t in normalize_key(cited).split() if t]
     if not want:
         return text, []
     spans = [(m.start(), m.group(0)) for m in re.finditer(r"\S+", text)]
     tail = spans[-len(want):]
     if len(tail) < len(want):
         return text, []
-    if [normalize_ar_key(w).strip() for _, w in tail] != want:
+    if [normalize_key(w).strip() for _, w in tail] != want:
         return text, []
 
     cut = tail[0][0]

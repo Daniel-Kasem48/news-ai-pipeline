@@ -20,7 +20,8 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from newsai.normalize import normalize_ar_key
+from newsai.lang import LANG
+from newsai.normalize import normalize_key
 
 COUNTRY, GOVERNORATE, DISTRICT, TOWN = 0, 1, 2, 3
 
@@ -44,7 +45,7 @@ LEVELS = {"country": COUNTRY, "governorate": GOVERNORATE,
 # The gazetteer is data and lives outside the code. Nothing about any particular
 # place belongs in this module — a fact written here is a fact the pipeline can
 # never be measured without. Override the path with PLACES_PATH.
-GAZETTEER = Path(os.getenv("PLACES_PATH") or Path(__file__).with_name("data") / "places.json")
+GAZETTEER = Path(os.getenv("PLACES_PATH") or Path(__file__).with_name("data") / f"places.{LANG}.json")
 
 
 def load(path=None):
@@ -70,7 +71,7 @@ _BY_CANON = {}
 for _p in SEED:
     _BY_CANON[_p.canonical] = _p
     for _a in (_p.canonical,) + tuple(_p.aliases):
-        _BY_ALIAS.setdefault(normalize_ar_key(_a), _p.canonical)
+        _BY_ALIAS.setdefault(normalize_key(_a), _p.canonical)
 
 # stripped before lookup so "بلدة شحور" and "شحور" resolve alike
 _PREFIXES = ("بلدة", "مدينة", "قضاء", "محافظة", "منطقة", "محلة", "قرية", "مخيم", "حي")
@@ -80,11 +81,11 @@ def resolve(name: str):
     """Place name -> canonical, or None if unknown."""
     if not name:
         return None
-    key = normalize_ar_key(name)
+    key = normalize_key(name)
     if key in _BY_ALIAS:
         return _BY_ALIAS[key]
     words = key.split()
-    if words and words[0] in {normalize_ar_key(p) for p in _PREFIXES}:
+    if words and words[0] in {normalize_key(p) for p in _PREFIXES}:
         stripped = " ".join(words[1:])
         if stripped in _BY_ALIAS:
             return _BY_ALIAS[stripped]
@@ -124,7 +125,7 @@ def match(a: str, b: str):
     if not ca or not cb:
         # unknown to the table — fall back to a normalized string compare so an
         # unseeded place still matches itself
-        na, nb = normalize_ar_key(a or ""), normalize_ar_key(b or "")
+        na, nb = normalize_key(a or ""), normalize_key(b or "")
         return ("exact", na) if na and na == nb else (None, None)
 
     if ca[0] == cb[0]:
